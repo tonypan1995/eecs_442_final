@@ -29,18 +29,12 @@ def get_im(path):
 def load_train(img_names, img_class, folder_path):
     num_classes = 9
     X = []
-    y = np.zeros((len(img_class), num_classes))
+    # y = np.zeros((len(img_class), num_classes))
+    y = []
 
     print('Read train images')
 
     for i in range(len(img_names)):
-
-        # Load data
-        path = folder_path + ("/%s.jpg" % img_names[i])
-        img = cv2.imread(path)
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        img = cv2.resize(img, (200, 200))
-        X.append(img)
 
         # Load label
         label = img_class[i].replace('(', '').replace(')', '')
@@ -48,6 +42,9 @@ def load_train(img_names, img_class, folder_path):
         vertical_angle = int(label[0])
         horizontal_angle = int(label[1])
         # print(vertical_angle, horizontal_angle)
+        new_row = [0] * num_classes
+        if vertical_angle in [30, -30] or horizontal_angle in [30, -30]:
+            continue
         if vertical_angle >= 30:
             a = 0
         elif vertical_angle > -30:
@@ -62,7 +59,18 @@ def load_train(img_names, img_class, folder_path):
             b = 2
         label = a * 3 + b
         # print(label)
-        y[i, label] = 1
+        # y[i, label] = 1
+        new_row[label] = 1
+        # print(new_row)
+        # print(y)
+        y.append(new_row)
+
+        # Load data
+        path = folder_path + ("/%s.jpg" % img_names[i])
+        img = cv2.imread(path)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.resize(img, (200, 200))
+        X.append(img)
     # print(np.array(X).shape, np.array(y).shape)
     return np.array(X), np.array(y)
 
